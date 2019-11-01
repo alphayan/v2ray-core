@@ -2,8 +2,9 @@ package log
 
 import (
 	fmt "fmt"
-	proto "github.com/golang/protobuf/proto"
 	math "math"
+
+	proto "github.com/golang/protobuf/proto"
 	log "v2ray.com/core/common/log"
 )
 

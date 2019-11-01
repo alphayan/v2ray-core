@@ -6,8 +6,9 @@ package mocks
 
 import (
 	context "context"
-	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
 	net "v2ray.com/core/common/net"
 	routing "v2ray.com/core/features/routing"
 	transport "v2ray.com/core/transport"

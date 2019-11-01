@@ -2,8 +2,9 @@ package quic
 
 import (
 	fmt "fmt"
-	proto "github.com/golang/protobuf/proto"
 	math "math"
+
+	proto "github.com/golang/protobuf/proto"
 	protocol "v2ray.com/core/common/protocol"
 	serial "v2ray.com/core/common/serial"
 )

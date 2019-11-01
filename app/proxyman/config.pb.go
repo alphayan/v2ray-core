@@ -2,8 +2,9 @@ package proxyman
 
 import (
 	fmt "fmt"
-	proto "github.com/golang/protobuf/proto"
 	math "math"
+
+	proto "github.com/golang/protobuf/proto"
 	net "v2ray.com/core/common/net"
 	serial "v2ray.com/core/common/serial"
 	internet "v2ray.com/core/transport/internet"

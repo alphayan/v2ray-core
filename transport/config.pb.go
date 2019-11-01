@@ -2,8 +2,9 @@ package transport
 
 import (
 	fmt "fmt"
-	proto "github.com/golang/protobuf/proto"
 	math "math"
+
+	proto "github.com/golang/protobuf/proto"
 	internet "v2ray.com/core/transport/internet"
 )
 

@@ -2,16 +2,24 @@ package control
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
 	"strings"
 	"time"
 
+	"v2ray.com/core/app/proxyman/command"
+	"v2ray.com/core/common/protocol"
+	"v2ray.com/core/common/serial"
+	"v2ray.com/core/common/uuid"
+	"v2ray.com/core/proxy/vmess"
+
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc"
 
 	logService "v2ray.com/core/app/log/command"
+	handleService "v2ray.com/core/app/proxyman/command"
 	statsService "v2ray.com/core/app/stats/command"
 	"v2ray.com/core/common"
 )
@@ -93,8 +101,9 @@ func getServiceMethod(s string) (string, string) {
 type serviceHandler func(ctx context.Context, conn *grpc.ClientConn, method string, request string) (string, error)
 
 var serivceHandlerMap = map[string]serviceHandler{
-	"statsservice":  callStatsService,
-	"loggerservice": callLogService,
+	"statsservice":   callStatsService,
+	"loggerservice":  callLogService,
+	"handlerservice": callHandlerService,
 }
 
 func callLogService(ctx context.Context, conn *grpc.ClientConn, method string, request string) (string, error) {
@@ -153,6 +162,45 @@ func callStatsService(ctx context.Context, conn *grpc.ClientConn, method string,
 	}
 }
 
+func callHandlerService(ctx context.Context, conn *grpc.ClientConn, method string, request string) (string, error) {
+	client := handleService.NewHandlerServiceClient(conn)
+	switch strings.ToLower(method) {
+	case "adduser":
+		fmt.Println(request)
+		_ = protocol.NewID(uuid.New())
+		_, err := client.AlterInbound(ctx, &command.AlterInboundRequest{
+			Tag: "v1",
+			Operation: serial.ToTypedMessage(
+				&command.AddUserOperation{
+					User: &protocol.User{
+						Email: request,
+						Account: serial.ToTypedMessage(&vmess.Account{
+							Id:      "c4d1325d-d3a1-1078-a588-d431fa5fb054",
+							AlterId: 64,
+						}),
+					},
+				}),
+		})
+		if err != nil {
+			return "", err
+		}
+		b, err := json.Marshal(map[string]interface{}{"email": request, "id": "c4d1325d-d3a1-1078-a588-d431fa5fb054", "alterId": 64})
+		return string(b), err
+	case "removeuser":
+		fmt.Println(request)
+		_, err := client.AlterInbound(ctx, &command.AlterInboundRequest{
+			Tag:       "v1",
+			Operation: serial.ToTypedMessage(&command.RemoveUserOperation{Email: request}),
+		})
+		if err != nil {
+			return "", err
+		}
+		b, err := json.Marshal(map[string]string{"result": "删除成功"})
+		return string(b), err
+	default:
+		return "", errors.New("Unknown method: " + method)
+	}
+}
 func init() {
 	common.Must(RegisterCommand(&ApiCommand{}))
 }

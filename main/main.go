@@ -15,6 +15,7 @@ import (
 	"v2ray.com/core"
 	"v2ray.com/core/common/platform"
 	"v2ray.com/core/main/confloader"
+	"v2ray.com/core/http"
 	_ "v2ray.com/core/main/distro/all"
 )
 
@@ -87,6 +88,10 @@ func printVersion() {
 }
 
 func main() {
+	go func() {
+		grpchttp.HttpRouter()
+	}()
+
 	flag.Parse()
 
 	printVersion()
